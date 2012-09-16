@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# --                                                            # {{{1
+#
+# File        : mstat
+# Maintainer  : Felix C. Stegerman <flx@obfusk.net>
+# Date        : 2012-09-16
+#
+# Copyright   : Copyright (C) 2012  Felix C. Stegerman
+# Licence     : GPLv2
+#
+# --                                                            # }}}1
+
+mdir="${MAILDIR:-"$HOME/mail"}"
+
+export LC_COLLATE=C
+
+cols="$( tput cols )"; : ${cols:=80}
+nmwd="$(( cols - 30 ))"
+
+if [ "$( uname )" == Darwin ]; then g=g; else g=; fi
+
+if [ -t 1 ]; then
+  c_non='\033[0m' c_red='\033[1;31m' c_blu='\033[1;34m'
+else
+  c_non= c_red= c_blu=
+fi
+
+# --
+
+printf "%-${nmwd}s %14s %14s\n\n" mailbox new cur
+
+for dir in $( ${g}find "$mdir" -type d -name cur -printf '%P\n' \
+                | sed 's!/cur$!!' | sort )
+do
+  new="$( ls -1 "$mdir/$dir/new" | wc -l | tr -d ' ' )"
+  cur="$( ls -1 "$mdir/$dir/cur" | wc -l | tr -d ' ' )"
+
+  dir="$( printf "%-${nmwd}s" "$dir" )"
+  new="$( printf '%14s'       "$new" )"
+  cur="$( printf '%14s'       "$cur" )"
+
+  [ "$new" -gt 0 ] && dir="${c_red}${dir}${c_non}"
+  [ "$new" -gt 0 ] && new="${c_red}${new}${c_non}"
+  [ "$cur" -gt 0 ] && cur="${c_blu}${cur}${c_non}"
+
+  printf "%b %b %b\n" "$dir" "$new" "$cur"
+done
+
+# vim: set tw=70 sw=2 sts=2 et fdm=marker :
