@@ -1,0 +1,18 @@
+#!/bin/bash
+
+mp3=( ~/Music/mp3* )
+artists=0 albums=0 tracks=0
+
+for dir in "${mp3[@]}"; do
+  for artist in "$dir"/*; do
+    for album in "$artist"/*; do
+      for track in "$artist"/*.mp3; do
+        (( ++track ))
+      done
+      (( ++album ))
+    done
+  (( ++artist ))
+done
+
+printf '%d artists - %d albums - %d tracks\n' \
+  "$artists" "$albums" "$tracks"
