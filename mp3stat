@@ -1,17 +1,21 @@
 #!/bin/bash
 
+set -e
+shopt -s nullglob
+
 mp3=( ~/Music/mp3* )
 artists=0 albums=0 tracks=0
 
 for dir in "${mp3[@]}"; do
-  for artist in "$dir"/*; do
-    for album in "$artist"/*; do
-      for track in "$artist"/*.mp3; do
-        (( ++track ))
+  for artist in "$dir"/*/; do
+    for album in "$artist"/*/; do
+      for track in "$album"/*.mp3; do
+        (( ++tracks ))
       done
-      (( ++album ))
+      (( ++albums ))
     done
-  (( ++artist ))
+  (( ++artists ))
+  done
 done
 
 printf '%d artists - %d albums - %d tracks\n' \
