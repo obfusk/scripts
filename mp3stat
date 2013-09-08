@@ -9,19 +9,23 @@ else
   mp3=( "$@" )
 fi
 
-artists=0 albums=0 tracks=0
+artists=() n_albums=0 n_tracks=0
 
 for dir in "${mp3[@]}"; do
   for artist in "$dir"/*/; do
     for album in "$artist"/*/; do
       for track in "$album"/*.mp3; do
-        (( ++tracks ))
+        (( ++n_tracks ))
       done
-      (( ++albums ))
+      (( ++n_albums ))
     done
-  (( ++artists ))
+    artists+=( "$( basename "$artist" )" )
   done
 done
 
+n_artists="$(
+  for x in "${artists[@]}"; do echo "$x"; done | sort | uniq | wc -l
+)"
+
 printf '%d artists - %d albums - %d tracks\n' \
-  "$artists" "$albums" "$tracks"
+  "$n_artists" "$n_albums" "$n_tracks"
